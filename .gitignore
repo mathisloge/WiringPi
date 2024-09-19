@@ -5,3 +5,7 @@ lib*.so.*
 debian-template/wiringPi
 debian-template/wiringpi-*.deb
 gpio/gpio
+build-cmake
+.cache
+compile_commands.json
+dist

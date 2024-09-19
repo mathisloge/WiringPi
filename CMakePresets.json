@@ -1,0 +1,62 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 26,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build-cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
+            }
+        },
+        {
+            "name": "developer",
+            "inherits": "default",
+            "installDir": "${sourceDir}/dist",
+            "displayName": "Developer Config",
+            "description": "The developer configuration",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "QT_QML_DEBUG": true
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "developer",
+            "configurePreset": "developer"
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "developer",
+            "configurePreset": "developer",
+            "generators": ["DEB"]
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "developer",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "developer"
+                },
+                {
+                    "type": "build",
+                    "name": "developer"
+                },
+                {
+                    "type": "package",
+                    "name": "developer"
+                }
+            ]
+        }
+    ]
+}

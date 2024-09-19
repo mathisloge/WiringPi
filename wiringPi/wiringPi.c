@@ -78,7 +78,7 @@
 #include "softTone.h"
 
 #include "wiringPi.h"
-#include "../version.h"
+#include "version.h"
 #include "wiringPiLegacy.h"
 
 // Environment Variables
@@ -897,7 +897,7 @@ static void usingGpioMemCheck (const char *what)
 void PrintSystemStdErr () {
   struct utsname sys_info;
   if (uname(&sys_info) == 0) {
-    fprintf (stderr, "      WiringPi    : %d.%d\n", VERSION_MAJOR, VERSION_MINOR);
+    fprintf (stderr, "      WiringPi    : %d.%d\n", WIRINGPI_VERSION_MAJOR, WIRINGPI_VERSION_MINOR);
     fprintf (stderr, "      system name : %s\n", sys_info.sysname);
     //fprintf (stderr, "  node name   : %s\n", sys_info.nodename);
     fprintf (stderr, "      release     : %s\n", sys_info.release);
@@ -2182,10 +2182,14 @@ int digitalRead (int pin)
     }
 
     if (PI_MODEL_5 == RaspberryPiModel) {
-      switch(gpio[2*pin] & RP1_STATUS_LEVEL_MASK) {
-        default: // 11 or 00 not allowed, give LOW!
-        case RP1_STATUS_LEVEL_LOW:  return LOW ;
-        case RP1_STATUS_LEVEL_HIGH: return HIGH ;
+      const unsigned int status = gpio[2*pin] & RP1_STATUS_LEVEL_MASK;
+      if (RP1_STATUS_LEVEL_LOW==status) {
+        return LOW;
+      } else if (RP1_STATUS_LEVEL_HIGH==status) {
+        return HIGH;
+      } else { // 11 or 00 not allowed, give LOW!
+        fprintf(stderr, "digitalRead: invalid status %u\n", status);
+        return LOW;
       }
     } else {
       if ((*(gpio + gpioToGPLEV [pin]) & (1 << (pin & 31))) != 0)
@@ -2973,8 +2977,8 @@ unsigned long long piMicros64(void) {
 
 void wiringPiVersion (int *major, int *minor)
 {
-  *major = VERSION_MAJOR ;
-  *minor = VERSION_MINOR ;
+  *major = WIRINGPI_VERSION_MAJOR ;
+  *minor = WIRINGPI_VERSION_MINOR ;
 }
 
 
